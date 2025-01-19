@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "tsc --noEmit && next build",
-  "vercel-build": "SKIP_TYPE_CHECK=true next build",
+  
     "start": "next start",
     "lint": "next lint"
   },
