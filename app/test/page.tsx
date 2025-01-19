@@ -1,5 +1,5 @@
 "use client"
-
+import emailjs from "emailjs-com";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
@@ -8,6 +8,7 @@ import { Select, SelectTrigger, SelectContent, SelectItem } from "@/components/u
 import { Switch } from "@/components/ui/switch";
 import { format } from "date-fns";
 import { UploadButton } from "../utils/uploadthing";
+import Image from "next/image";
 
 interface ContainerEntry {
   _id: string;
@@ -31,6 +32,46 @@ export default function Home() {
   const [searchDate, setSearchDate] = useState("");
   const [error, setError] = useState("");
   const [token, setToken] = useState<string | null>(null);
+
+
+
+
+  const handleSubmit = async () => {
+      // console.log( currentEntry.containerNumber)
+  
+
+    try {
+      const response = await emailjs.send(
+        "service_mg4ulkr",
+        "template_p47nlzh",
+        {
+          container_no: currentEntry.containerNumber,
+          form_e: currentEntry.formENumbers,
+          company: currentEntry.company,
+          date: currentEntry.date,
+          status: currentEntry.status,
+          image_url: currentEntry.fileUrl
+
+        },
+        "9ka_TbrHNmAaORuf7"
+      );
+      alert("Email sent successfully!");
+      console.log("Success:", response.status, response.text);
+    } catch (error) {
+      console.error("Failed to send email:", error);
+      alert("Failed to send email. Please try again later.");
+    } finally {
+    
+    }
+  };
+
+
+
+
+
+
+
+
 
   // Fetch JWT token from localStorage
   useEffect(() => {
@@ -77,9 +118,10 @@ export default function Home() {
       formENumbers: [""],
       company: companies[0],
       status: true,
-      date: format(new Date(), "yyyy-MM-dd"),
+      date: new Date().toISOString().split('T')[0], // Formats date as yyyy-MM-dd
       fileUrl: "",
     });
+    
     setIsModalOpen(true);
   };
 
@@ -169,11 +211,11 @@ export default function Home() {
     setCurrentEntry((prev) => ({ ...prev, fileUrl }));
   };
 
-  const handleClientUploadComplete = (res) => {
+  const handleClientUploadComplete = (res: any) => {
     console.log("hi");
     console.log(res[0].url); // Ensure this is the correct format of the response
   
-    alert("hi");
+    // alert("hi");
   
     const imageUrl = res[0].url;
     if (imageUrl) {
@@ -211,6 +253,7 @@ export default function Home() {
       <div className="mt-6 grid gap-4">
         {filteredEntries.map((entry) => (
           <div key={entry._id} className="border p-4 rounded-md shadow-md">
+            
             <p><strong>Container Number:</strong> {entry.containerNumber}</p>
             <p><strong>Form-E Numbers:</strong> {entry.formENumbers.join(", ")}</p>
             <p><strong>Company:</strong> {entry.company}</p>
@@ -221,7 +264,16 @@ export default function Home() {
                 {entry.status ? "Submitted" : "Not Submitted"}
               </span>
             </p>
-            <img src={entry.fileUrl} alt="Uploaded Preview" className="w-[200px] h-[200px] rounded-md" />
+            <div className="mt-4 mb-4"> 
+            <Image
+      src={entry.fileUrl} // The URL of the uploaded image
+      alt="Uploaded Preview"
+      width={250} // Set width directly
+      height={200} // Set height directly
+      className="rounded-md" // Add Tailwind CSS class for rounded corners
+
+    />
+            </div>
             <div className="flex gap-2 mt-2">
               <Button onClick={() => handleEditEntry(entry)}>Edit</Button>
               <Button onClick={() => handleDownloadImage(entry.fileUrl)}>Download</Button>
@@ -290,7 +342,15 @@ export default function Home() {
 
           {currentEntry.fileUrl && (
             <div className="mt-4">
-              <img src={currentEntry.fileUrl} alt="Uploaded Preview" className="w-full h-auto rounded-md" />
+              <Image
+      src={currentEntry.fileUrl} // The URL of the uploaded image
+      alt="Uploaded Preview"
+      width={250} // Set width directly
+      height={200} // Set height directly
+      className="rounded-md" // Add Tailwind CSS class for rounded corners
+
+    />
+              {/* <img src={currentEntry.fileUrl} alt="Uploaded Preview" className="w-full h-auto rounded-md" /> */}
             </div>
           )}
 
@@ -302,7 +362,10 @@ export default function Home() {
             <span>Submitted</span>
           </div>
 
-          <Button onClick={handleSaveEntry}>Save</Button>
+          <Button onClick={()=>{handleSaveEntry();
+                                setIsModalOpen(false);
+                                handleSubmit();
+          }}>Save</Button>
         </div>
       </Modal>
     </div>
