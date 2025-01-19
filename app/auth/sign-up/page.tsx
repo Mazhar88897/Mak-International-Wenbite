@@ -16,6 +16,8 @@ export default function SignUpCard() {
   const router = useRouter();
   const [password, setPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [name, setName] = useState<string>("");
   const [error, setError] = useState<string>("");
   const [isSending, setIsSending] = useState(false);
 
@@ -47,17 +49,17 @@ export default function SignUpCard() {
     setError(""); // Clear error
 
     // Send data to the backend
-    const form = e.target as HTMLFormElement;
+    setIsSending(true);
     const response = await fetch("/api/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        name: form.name.value,
-        email: form.email.value,
+        name,
+        email,
         password,
       }),
     });
-    setIsSending(true);
+
     const data = await response.json();
 
     if (response.ok) {
@@ -87,6 +89,8 @@ export default function SignUpCard() {
                   name="name"
                   type="text"
                   placeholder="Enter your full name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
                   required
                 />
               </div>
@@ -99,6 +103,8 @@ export default function SignUpCard() {
                   name="email"
                   type="email"
                   placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   required
                 />
               </div>
