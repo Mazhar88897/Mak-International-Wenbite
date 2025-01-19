@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,10 +10,10 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useRouter } from 'next/navigation';
-export default function SignUpCard() {
+import { useRouter } from "next/navigation";
 
-  const router = useRouter(); 
+export default function SignUpCard() {
+  const router = useRouter();
   const [password, setPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [error, setError] = useState<string>("");
@@ -30,7 +28,6 @@ export default function SignUpCard() {
 
   // Form submission handler
   const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
-
     e.preventDefault();
 
     if (!validatePassword(password)) {
@@ -66,7 +63,6 @@ export default function SignUpCard() {
     if (response.ok) {
       setIsSending(false);
       alert("Sign-up successful!");
-      
     } else {
       setError(data.error || "An error occurred");
       setIsSending(false);
@@ -140,9 +136,12 @@ export default function SignUpCard() {
             </div>
 
             <CardFooter className="flex justify-between mt-4">
-              
-              <Button variant="outline" onClick={() => router.push('/')}>Sign In</Button>
-              <Button type="submit" > {isSending ? "Signing Up..." : "Sign Up"}</Button>
+              <Button variant="outline" onClick={() => router.push("/")}>
+                Sign In
+              </Button>
+              <Button type="submit">
+                {isSending ? "Signing Up..." : "Sign Up"}
+              </Button>
             </CardFooter>
           </form>
         </CardContent>
