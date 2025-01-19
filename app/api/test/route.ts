@@ -1,8 +1,9 @@
-import { Request } from 'express';
+import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb"; // Ensure dbConnect is properly defined.
-import Record from "../../models/Record";
+import Record from "../../models/Record"; // Adjust the path to your model if necessary.
 
-export async function POST(req: Request) {
+// CREATE a new record
+export async function POST(req: NextRequest) {
   await dbConnect();
 
   try {
@@ -10,10 +11,7 @@ export async function POST(req: Request) {
     console.log("Incoming data:", { containerNumber, formENumbers, company, date, status, fileUrl });
 
     if (!containerNumber || !formENumbers || !fileUrl) {
-      return new Response(
-        JSON.stringify({ success: false, error: "All fields are required" }),
-        { status: 400 }
-      );
+      return NextResponse.json({ success: false, error: "All fields are required" }, { status: 400 });
     }
 
     const newRecord = await Record.create({
@@ -22,27 +20,26 @@ export async function POST(req: Request) {
       company,
       date,
       status,
-      fileUrl, 
+      fileUrl,
     });
 
     console.log("Record created successfully:", newRecord);
 
-    return new Response(
-      JSON.stringify({ success: true, message: "Record created successfully", data: newRecord }),
+    return NextResponse.json(
+      { success: true, message: "Record created successfully", data: newRecord },
       { status: 201 }
     );
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error creating record:", error);
-    return new Response(
-      JSON.stringify({ success: false, error: "Failed to create record", details: error.message }),
+    return NextResponse.json(
+      { success: false, error: "Failed to create record", details: error.message },
       { status: 500 }
     );
   }
 }
 
-
 // READ all records or a single record by ID
-export async function GET(req: Request) {
+export async function GET(req: NextRequest) {
   await dbConnect();
 
   const { searchParams } = new URL(req.url);
@@ -51,57 +48,59 @@ export async function GET(req: Request) {
   try {
     if (id) {
       const record = await Record.findById(id);
-      if (!record) return new Response(JSON.stringify({ error: "Record not found" }), { status: 404 });
-      return new Response(JSON.stringify(record), { status: 200 });
+      if (!record) return NextResponse.json({ error: "Record not found" }, { status: 404 });
+      return NextResponse.json(record, { status: 200 });
     } else {
       const records = await Record.find();
-      return new Response(JSON.stringify(records), { status: 200 });
+      return NextResponse.json(records, { status: 200 });
     }
-  } catch (error) {
-    return new Response(JSON.stringify({ error: "Failed to retrieve records", details: error.message }), { status: 500 });
+  } catch (error: any) {
+    return NextResponse.json({ error: "Failed to retrieve records", details: error.message }, { status: 500 });
   }
 }
 
 // UPDATE a record by ID with file URL
-export async function PUT(req: Request) {
+export async function PUT(req: NextRequest) {
   await dbConnect();
 
   try {
     const { _id, containerNumber, formENumbers, company, date, status, fileUrl } = await req.json();
 
-    if (!_id) return new Response(JSON.stringify({ error: "Record ID is required" }), { status: 400 });
+    if (!_id) return NextResponse.json({ error: "Record ID is required" }, { status: 400 });
 
-    // Update the record with the new data, including file URL
     const updatedRecord = await Record.findByIdAndUpdate(
       _id,
       { containerNumber, formENumbers, company, date, status, fileUrl },
       { new: true }
     );
 
-    if (!updatedRecord) return new Response(JSON.stringify({ error: "Record not found" }), { status: 404 });
+    if (!updatedRecord) return NextResponse.json({ error: "Record not found" }, { status: 404 });
 
-    return new Response(JSON.stringify({ message: "Record updated successfully", data: updatedRecord }), { status: 200 });
-  } catch (error) {
-    return new Response(JSON.stringify({ error: "Failed to update record", details: error.message }), { status: 500 });
+    return NextResponse.json(
+      { message: "Record updated successfully", data: updatedRecord },
+      { status: 200 }
+    );
+  } catch (error: any) {
+    return NextResponse.json({ error: "Failed to update record", details: error.message }, { status: 500 });
   }
 }
 
 // DELETE a record by ID
-export async function DELETE(req: Request) {
+export async function DELETE(req: NextRequest) {
   await dbConnect();
 
   const { searchParams } = new URL(req.url);
-  const _id = searchParams.get("_id"); // Fetch `_id` from query params
+  const _id = searchParams.get("_id");
 
-  if (!_id) return new Response(JSON.stringify({ error: "Record ID is required" }), { status: 400 });
+  if (!_id) return NextResponse.json({ error: "Record ID is required" }, { status: 400 });
 
   try {
     const deletedRecord = await Record.findByIdAndDelete(_id);
     if (!deletedRecord) {
-      return new Response(JSON.stringify({ error: "Record not found" }), { status: 404 });
+      return NextResponse.json({ error: "Record not found" }, { status: 404 });
     }
-    return new Response(JSON.stringify({ message: "Record deleted successfully" }), { status: 200 });
-  } catch (error) {
-    return new Response(JSON.stringify({ error: "Failed to delete record", details: error.message }), { status: 500 });
+    return NextResponse.json({ message: "Record deleted successfully" }, { status: 200 });
+  } catch (error: any) {
+    return NextResponse.json({ error: "Failed to delete record", details: error.message }, { status: 500 });
   }
 }
