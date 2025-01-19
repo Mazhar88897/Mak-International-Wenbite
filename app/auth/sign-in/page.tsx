@@ -19,12 +19,16 @@ export default function SignInCard() {
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    const form = e.target as HTMLFormElement; // Cast e.target to HTMLFormElement
+    const email = (form.email as HTMLInputElement).value; // Access email input
+    const password = (form.password as HTMLInputElement).value; // Access password input
+
     const response = await fetch('/api/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        email: e.target.email.value,
-        password: e.target.password.value,
+        email,
+        password,
       }),
     });
 
@@ -52,12 +56,13 @@ export default function SignInCard() {
             <div className="grid w-full items-center gap-4">
               <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" placeholder="Enter your email" required />
+                <Input id="email" name="email" type="email" placeholder="Enter your email" required />
               </div>
               <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="password">Password</Label>
                 <Input
                   id="password"
+                  name="password"
                   type="password"
                   placeholder="Enter your password"
                   required
@@ -72,7 +77,6 @@ export default function SignInCard() {
         <CardFooter className="flex justify-between">
           <Button variant="outline" onClick={() => router.push('/auth/sign-in')}>Cancel</Button>
           <Button variant="outline" onClick={() => router.push('/auth/sign-up')}>Sign Up</Button>
-          
         </CardFooter>
       </Card>
     </div>
