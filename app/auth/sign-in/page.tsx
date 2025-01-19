@@ -20,8 +20,8 @@ export default function SignInCard() {
     e.preventDefault();
 
     const form = e.target as HTMLFormElement; // Cast e.target to HTMLFormElement
-    const email = (form.email as HTMLInputElement).value; // Access email input
-    const password = (form.password as HTMLInputElement).value; // Access password input
+    const email = (form.elements.namedItem("email") as HTMLInputElement).value; // Access email input
+    const password = (form.elements.namedItem("password") as HTMLInputElement).value; // Access password input
 
     const response = await fetch('/api/login', {
       method: 'POST',
