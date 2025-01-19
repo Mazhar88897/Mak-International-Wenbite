@@ -5,26 +5,26 @@ import User from "../../models/User";
 
 const SECRET_KEY = process.env.SECRET_KEY || "mak-internationals"; // Replace with a secure key
 
-export async function POST(req: { json: () => Promise<{ email: string; password: string }> }) {
+export async function POST(req: Request) {
   await dbConnect(); // Connect to MongoDB
   
-  const { email, password } = await req.json();
-
-  // Validate input
-  if (!email || !password) {
-    return new Response(
-      JSON.stringify({ error: "Email and password are required" }),
-      { status: 400 }
-    );
-  }
-
   try {
+    const { email, password } = await req.json();
+
+    // Validate input
+    if (!email || !password) {
+      return new Response(
+        JSON.stringify({ error: "Email and password are required" }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
     // Check if the user exists
     const user = await User.findOne({ email });
     if (!user) {
       return new Response(
         JSON.stringify({ error: "Invalid email or password" }),
-        { status: 401 } // Unauthorized
+        { status: 401, headers: { "Content-Type": "application/json" } }
       );
     }
 
@@ -33,7 +33,7 @@ export async function POST(req: { json: () => Promise<{ email: string; password:
     if (!isPasswordValid) {
       return new Response(
         JSON.stringify({ error: "Invalid email or password" }),
-        { status: 401 } // Unauthorized
+        { status: 401, headers: { "Content-Type": "application/json" } }
       );
     }
 
@@ -46,13 +46,13 @@ export async function POST(req: { json: () => Promise<{ email: string; password:
 
     return new Response(
       JSON.stringify({ message: "Login successful", token }),
-      { status: 200 } // Success
+      { status: 200, headers: { "Content-Type": "application/json" } }
     );
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : "Unknown error";
     return new Response(
       JSON.stringify({ error: "Something went wrong", details: errorMessage }),
-      { status: 500 } // Internal Server Error
+      { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
 }
