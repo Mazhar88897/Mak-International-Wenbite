@@ -7,7 +7,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
     <div className="flex flex-col min-h-screen">
       {/* Topbar */}
       <div className="flex items-center justify-between bg-black text-white p-4 shadow-lg">
-      <span className="text-2xl font-bold">MAK INTERNATIONAL & CO</span>
+      <span className="text-2xl font-bold">MAK INTERNATIONAL </span>
       <div>
         {/* Add additional actions if necessary */}
       </div>

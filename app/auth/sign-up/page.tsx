@@ -12,11 +12,14 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-
+import { useRouter } from 'next/navigation';
 export default function SignUpCard() {
+
+  const router = useRouter(); 
   const [password, setPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [error, setError] = useState<string>("");
+  const [isSending, setIsSending] = useState(false);
 
   // Function to validate a strong password
   const validatePassword = (password: string): boolean => {
@@ -27,17 +30,20 @@ export default function SignUpCard() {
 
   // Form submission handler
   const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
+
     e.preventDefault();
 
     if (!validatePassword(password)) {
       setError(
         "Password must be at least 8 characters long and include an uppercase letter, a lowercase letter, a number, and a special character."
       );
+      setIsSending(false);
       return;
     }
 
     if (password !== confirmPassword) {
       setError("Passwords do not match.");
+      setIsSending(false);
       return;
     }
 
@@ -54,12 +60,16 @@ export default function SignUpCard() {
         password,
       }),
     });
-
+    setIsSending(true);
     const data = await response.json();
+
     if (response.ok) {
+      setIsSending(false);
       alert("Sign-up successful!");
+      
     } else {
       setError(data.error || "An error occurred");
+      setIsSending(false);
     }
   };
 
@@ -130,10 +140,9 @@ export default function SignUpCard() {
             </div>
 
             <CardFooter className="flex justify-between mt-4">
-              <Button variant="outline" type="button">
-                Cancel
-              </Button>
-              <Button type="submit">Sign Up</Button>
+              
+              <Button variant="outline" onClick={() => router.push('/')}>Sign In</Button>
+              <Button type="submit" > {isSending ? "Signing Up..." : "Sign Up"}</Button>
             </CardFooter>
           </form>
         </CardContent>

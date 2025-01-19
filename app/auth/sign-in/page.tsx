@@ -64,13 +64,15 @@ export default function SignInCard() {
                 />
               </div>
             </div>
-            <div className="flex justify-center mt-4">
+            <div className="flex justify-end mt-4 mr-2">
               <Button type="submit">Sign In</Button>
             </div>
           </form>
         </CardContent>
         <CardFooter className="flex justify-between">
-          <Button variant="outline" onClick={() => router.push('/')}>Cancel</Button>
+          <Button variant="outline" onClick={() => router.push('/auth/sign-in')}>Cancel</Button>
+          <Button variant="outline" onClick={() => router.push('/auth/sign-up')}>Sign Up</Button>
+          
         </CardFooter>
       </Card>
     </div>
